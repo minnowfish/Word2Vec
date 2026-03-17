@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import unittest
 from preprocessing import tokenise_corpus, build_vocab_and_mappings, get_training_pairs
 
@@ -111,3 +107,4 @@ class TestGetTrainingPairs(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    
