@@ -1,9 +1,6 @@
 import re
 
 WINDOW_SIZE: int = 4
-vocabulary: list[str] = [] 
-word_to_index: dict[str, int] = {}
-index_to_word: dict[int, str] = {}
 
 def tokenise_corpus(corpus: list[str]) -> list[str]:
     tokens: list[str] = []
@@ -17,7 +14,20 @@ def tokenise_corpus(corpus: list[str]) -> list[str]:
 
     return tokens
 
-def get_training_pairs(tokens: list[str]) -> list[tuple[int, int]]:
+def build_vocab_and_mappings(tokens: list[str]) -> tuple[list[str], dict[str, int], dict[int, str]]:
+    vocabulary: list[str] = [] 
+    word_to_index: dict[str, int] = {}
+    index_to_word: dict[int, str] = {}
+
+    for token in tokens:
+        if token not in word_to_index:
+            word_to_index[token] = len(word_to_index)
+            index_to_word[len(index_to_word)] = token
+            vocabulary.append(token)
+
+    return (vocabulary, word_to_index, index_to_word)
+
+def get_training_pairs(tokens: list[str], word_to_index: dict[str, int]) -> list[tuple[int, int]]:
     training_pairs: list[tuple[int, int]] = []
     for pos in range(len(tokens)):
         center_index = word_to_index[tokens[pos]]
@@ -30,15 +40,3 @@ def get_training_pairs(tokens: list[str]) -> list[tuple[int, int]]:
                 context_index: int = word_to_index[tokens[pos + i]]
                 training_pairs.append((center_index, context_index))
     return training_pairs
-
-def main():
-    with open("corpus.txt", "r") as f:
-        corpus: list[str] = f.readlines()
-
-    tokens: list[str] = tokenise_corpus(corpus)
-
-    for token in tokens:
-        if token not in word_to_index:
-            word_to_index[token] = len(word_to_index)
-            index_to_word[len(index_to_word)] = token
-            vocabulary.append(token)
