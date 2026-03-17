@@ -1,0 +1,2 @@
+WINDOW_SIZE: int = 4
+NEGATIVE_SAMPLES: int = 5

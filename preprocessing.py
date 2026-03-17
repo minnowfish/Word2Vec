@@ -1,6 +1,6 @@
-import re
+from config import WINDOW_SIZE
 
-WINDOW_SIZE: int = 4
+import re
 
 def tokenise_corpus(corpus: list[str]) -> list[str]:
     tokens: list[str] = []
@@ -30,13 +30,13 @@ def build_vocab_and_mappings(tokens: list[str]) -> tuple[list[str], dict[str, in
 def get_training_pairs(tokens: list[str], word_to_index: dict[str, int]) -> list[tuple[int, int]]:
     training_pairs: list[tuple[int, int]] = []
     for pos in range(len(tokens)):
-        center_index = word_to_index[tokens[pos]]
+        target_index = word_to_index[tokens[pos]]
         for i in range(1, WINDOW_SIZE // 2 + 1):
             if pos - i >= 0:
                 context_index: int = word_to_index[tokens[pos - i]]
-                training_pairs.append((center_index, context_index))
+                training_pairs.append((target_index, context_index))
 
             if pos + i < len(tokens):
                 context_index: int = word_to_index[tokens[pos + i]]
-                training_pairs.append((center_index, context_index))
+                training_pairs.append((target_index, context_index))
     return training_pairs
