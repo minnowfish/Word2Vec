@@ -1,5 +1,5 @@
 import numpy as np
-from config import EMBEDDING_DIM, WEIGHT_INIT_SCALE
+from config import EMBEDDING_DIM, WEIGHT_INIT_SCALE, LEARNING_RATE
 from negative_sampling import get_negative_samples
 
 class Word2Vec:
@@ -51,11 +51,30 @@ class Word2Vec:
         prob = np.clip(prob, 1e-10, 1 - 1e-10) # avoid log(0)!!
         return -(label * np.log(prob) + (1 - label) * np.log(1 - prob))
 
-    def backward_propogation(self):
-        pass
+    def update_weights(
+            self,
+            pair: tuple[int, int],
+            positive_prob: float,
+            negative_samples: list[int],
+            negative_probs: list[float]
+            ):
+        target_idx, context_idx = pair
+        target_vector = self.w_embedding[target_idx].copy()
 
-    def update_weights(self):
-        pass
+        # positive grad descent 
+        error = positive_prob - 1
+        context_vector = self.w_context[context_idx]
+        self.w_embedding[target_idx] -= LEARNING_RATE * error * context_vector
+        self.w_context[context_idx] -= LEARNING_RATE * error * target_vector
+
+        # negative grad descent
+        for i in range(len(negative_samples)):
+            sample = negative_samples[i]
+            error = negative_probs[i] - 0
+
+            sample_vector = self.w_context[sample]
+            self.w_embedding[target_idx] -= LEARNING_RATE * error * sample_vector
+            self.w_context[sample] -= LEARNING_RATE * error * target_vector
 
     def __sigmoid(self, x):
         return np.divide(1, 1 + np.exp(-x))
